@@ -34,6 +34,16 @@
   .scale-hint { display: flex; justify-content: space-between; font-size: 11px; color: #aaa; margin-top: 6px; padding: 0 2px; }
   .open-q textarea { width: 100%; min-height: 70px; border: 1px solid #dce3ea; border-radius: 8px; padding: 12px; font-size: 14px; font-family: Arial, sans-serif; resize: vertical; box-sizing: border-box; background: #fff; }
   .open-q textarea:focus { outline: none; border-color: #0f6191; box-shadow: 0 0 0 3px rgba(15,97,145,0.08); }
+  .contact-q { margin-bottom: 16px; padding: 16px 18px; background: #eef3fa; border-radius: 10px; border-left: 4px solid #19325a; }
+  .contact-q .q-label { margin-bottom: 10px; }
+  .contact-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .contact-field { flex: 1 1 30%; min-width: 140px; }
+  .contact-field label { display: block; font-size: 12px; font-weight: 600; color: #19325a; margin-bottom: 4px; }
+  .contact-field input {
+    width: 100%; box-sizing: border-box; border: 1px solid #dce3ea; border-radius: 8px;
+    padding: 10px 12px; font-size: 14px; font-family: Arial, sans-serif; background: #fff; color: #333;
+  }
+  .contact-field input:focus { outline: none; border-color: #0f6191; box-shadow: 0 0 0 3px rgba(15,97,145,0.08); }
   .submit-row { text-align: center; margin: 20px 0 0; }
   .submit-btn {
     display: inline-block; padding: 13px 36px; background: linear-gradient(135deg, #0f6191, #19325a);
@@ -63,7 +73,25 @@
     <div class="greeting">
       <p class="hi">Здравствуйте!</p>
       <p>Спасибо, что работаете с <strong>АльфаТехУрал</strong>! Мы постоянно растём и хотим становиться лучше именно для Вас.</p>
-      <p>Пожалуйста, оцените по 5-балльной шкале. Заполните все вопросы и нажмите <strong>«Отправить ответ»</strong> — письмо сформируется автоматически.</p>
+      <p>Пожалуйста, заполните данные и оцените по 5-балльной шкале. Заполните все обязательные поля и нажмите <strong>«Отправить ответ»</strong>.</p>
+    </div>
+
+    <div class="contact-q">
+      <div class="q-label"><span class="q-num" style="background:#19325a;">✎</span> Ваши данные <span class="req">*</span></div>
+      <div class="contact-row">
+        <div class="contact-field">
+          <label for="cName">ФИО</label>
+          <input type="text" id="cName" name="ФИО" placeholder="Иванов Иван Иванович" autocomplete="name">
+        </div>
+        <div class="contact-field">
+          <label for="cCompany">Компания</label>
+          <input type="text" id="cCompany" name="Компания" placeholder="ООО «Пример»" autocomplete="organization">
+        </div>
+        <div class="contact-field">
+          <label for="cContact">Телефон или e-mail</label>
+          <input type="text" id="cContact" name="Контакт" placeholder="+7 ___ ___ __ __ / mail@">
+        </div>
+      </div>
     </div>
 
     <div class="q">
@@ -109,7 +137,7 @@
     <div class="submit-row">
       <button type="button" class="submit-btn" id="submitBtn">Отправить ответ</button>
       <p class="submit-hint">Заполните все вопросы со звёздочкой * — ответ отправится автоматически на Sales@atural.ru</p>
-      <p class="err" id="err">Пожалуйста, ответьте на все вопросы со звёздочкой *, чтобы отправить.</p>
+      <p class="err" id="err">Пожалуйста, заполните Ваши данные и ответьте на все вопросы со звёздочкой *, чтобы отправить.</p>
     </div>
   </div>
 
@@ -160,12 +188,24 @@
           err.style.display = 'block'; return;
         }
       }
+      var cFields = ['cName','cCompany','cContact'];
+      for (var j=0;j<cFields.length;j++){
+        if (!document.getElementById(cFields[j]).value.trim()){
+          err.style.display = 'block'; return;
+        }
+      }
       err.style.display = 'none';
 
       function val(n){ return document.querySelector('input[name="'+n+'"]:checked').value; }
+      var cname = document.getElementById('cName').value.trim();
+      var ccompany = document.getElementById('cCompany').value.trim();
+      var ccontact = document.getElementById('cContact').value.trim();
       var comment = document.getElementById('q6').value.trim() || '—';
 
       var data = {
+        'ФИО': cname,
+        'Компания': ccompany,
+        'Контакт': ccontact,
         'Общее впечатление': val('q1') + '/5',
         'Качество продукции': val('q2') + '/5',
         'Сроки': val('q3') + '/5',
@@ -175,7 +215,10 @@
         'Рекомендация': val('q7')
       };
 
-      var body = '1. Общее впечатление: ' + val('q1') + '/5\n'
+      var body = 'ФИО: ' + cname + '\n'
+        + 'Компания: ' + ccompany + '\n'
+        + 'Контакт: ' + ccontact + '\n\n'
+        + '1. Общее впечатление: ' + val('q1') + '/5\n'
         + '2. Качество продукции: ' + val('q2') + '/5\n'
         + '3. Сроки: ' + val('q3') + '/5\n'
         + '4. Менеджер: ' + val('q4') + '/5\n'
