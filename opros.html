@@ -108,8 +108,7 @@
 
     <div class="submit-row">
       <button type="button" class="submit-btn" id="submitBtn">Отправить ответ</button>
-      <div class="ok" id="okBox">Спасибо! Ваш ответ открывается в почтовом клиенте — просто отправьте письмо.</div>
-      <p class="submit-hint">После нажатия откроется почтовый клиент с готовым письмом — просто отправьте его на Sales@atural.ru</p>
+      <p class="submit-hint">Заполните все вопросы со звёздочкой * — ответ отправится автоматически на Sales@atural.ru</p>
       <p class="err" id="err">Пожалуйста, ответьте на все вопросы со звёздочкой *, чтобы отправить.</p>
     </div>
   </div>
@@ -120,18 +119,17 @@
     <p><a href="tel:+79222030693">+7 (922) 203-06-93</a> &bull; <a href="mailto:Sales@atural.ru">Sales@atural.ru</a></p>
   </div>
 
-  <div class="fallback" id="fallback" style="display:none;padding:18px 22px;border-top:1px solid #e3e9f0;background:#fbfcfe;font-family:Arial,sans-serif;">
-    <div style="font-size:15px;font-weight:bold;color:#19325a;margin-bottom:4px;">Ваш ответ готов</div>
-    <p style="font-size:13px;color:#555;margin:0 0 10px;">
-      Если почтовый клиент не открылся — <strong>скопируйте текст ниже</strong> и отправьте его на
-      <strong>Sales@atural.ru</strong>, либо нажмите кнопку ещё раз:
-    </p>
-    <textarea id="fallbackText" readonly style="width:100%;min-height:120px;border:1px solid #dce3ea;border-radius:8px;padding:10px;font-size:12px;font-family:Consolas,monospace;box-sizing:border-box;color:#333;background:#fff;"></textarea>
-    <div style="text-align:center;margin-top:12px;">
-      <a id="retryLink" href="#" style="display:inline-block;padding:11px 28px;background:linear-gradient(135deg,#0f6191,#19325a);color:#fff;font-size:14px;font-weight:bold;text-decoration:none;border-radius:9px;">Открыть почтовый клиент</a>
-      <button type="button" id="copyBtn" style="display:inline-block;padding:11px 22px;margin-left:8px;background:#fff;color:#0f6191;font-size:14px;font-weight:bold;border:2px solid #0f6191;border-radius:9px;cursor:pointer;">Скопировать текст</button>
+  <div class="fallback" id="fallback" style="display:none;padding:22px 26px;border-top:1px solid #e3e9f0;background:#f2faf5;font-family:Arial,sans-serif;text-align:center;">
+    <div style="font-size:20px;font-weight:bold;color:#1c8a49;">Спасибо! Ваш ответ отправлен</div>
+    <p style="font-size:14px;color:#555;margin:8px 0 14px;">Мы получили Ваши ответы. Большое спасибо, что уделили нам время!</p>
+    <div style="text-align:left;background:#fff;border:1px solid #dce3ea;border-radius:8px;padding:12px 16px;margin:0 auto;max-width:440px;">
+      <div style="font-size:12px;color:#888;margin-bottom:6px;">Копия для себя (не обязательна):</div>
+      <textarea id="fallbackText" readonly style="width:100%;min-height:90px;border:1px solid #e3e9f0;border-radius:6px;padding:8px;font-size:11px;font-family:Consolas,monospace;box-sizing:border-box;color:#555;background:#fbfcfe;resize:none;"></textarea>
+      <div style="text-align:center;margin-top:8px;">
+        <button type="button" id="copyBtn" style="display:inline-block;padding:9px 20px;background:#fff;color:#0f6191;font-size:13px;font-weight:bold;border:2px solid #0f6191;border-radius:7px;cursor:pointer;">Скопировать</button>
+      </div>
+      <p id="copiedHint" style="font-size:12px;color:#1c8a49;margin:8px 0 0;display:none;text-align:center;">Скопировано!</p>
     </div>
-    <p id="copiedHint" style="font-size:12px;color:#1c8a49;margin:8px 0 0;display:none;text-align:center;">Скопировано! Вставьте текст в письмо и отправьте на Sales@atural.ru</p>
   </div>
 
 </div></div>
@@ -156,7 +154,6 @@
 
     document.getElementById('submitBtn').addEventListener('click', function(){
       var err = document.getElementById('err');
-      var ok = document.getElementById('okBox');
       var names = ['q1','q2','q3','q4','q5','q7'];
       for (var i=0;i<names.length;i++){
         if (!document.querySelector('input[name="'+names[i]+'"]:checked')){
@@ -164,25 +161,50 @@
         }
       }
       err.style.display = 'none';
+
       function val(n){ return document.querySelector('input[name="'+n+'"]:checked').value; }
       var comment = document.getElementById('q6').value.trim() || '—';
-      var body = 'Ответ на опрос АльфаТехУрал:\n\n'
-        + '1. Общее впечатление: ' + val('q1') + '/5\n'
+
+      var data = {
+        'Общее впечатление': val('q1') + '/5',
+        'Качество продукции': val('q2') + '/5',
+        'Сроки': val('q3') + '/5',
+        'Менеджер': val('q4') + '/5',
+        'Цена/качество': val('q5') + '/5',
+        'Что улучшить': comment,
+        'Рекомендация': val('q7')
+      };
+
+      var body = '1. Общее впечатление: ' + val('q1') + '/5\n'
         + '2. Качество продукции: ' + val('q2') + '/5\n'
         + '3. Сроки: ' + val('q3') + '/5\n'
         + '4. Менеджер: ' + val('q4') + '/5\n'
         + '5. Цена/качество: ' + val('q5') + '/5\n'
         + '6. Что улучшить: ' + comment + '\n'
         + '7. Рекомендация: ' + val('q7');
-      var href = 'mailto:Sales@atural.ru?subject=' + encodeURIComponent('Ответ на опрос')
-        + '&body=' + encodeURIComponent(body);
-
       document.getElementById('fallbackText').value = body;
-      document.getElementById('retryLink').href = href;
-      document.getElementById('copiedHint').style.display = 'none';
-      document.getElementById('fallback').style.display = 'block';
-      ok.style.display = 'block';
-      window.location.href = href;
+
+      var btn = document.getElementById('submitBtn');
+      btn.disabled = true;
+      btn.textContent = 'Отправляем...';
+
+      fetch('https://formspree.io/f/xaeypqqd', {
+        method: 'POST',
+        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      }).then(function(resp){
+        if (resp.ok) {
+          document.getElementById('fallback').style.display = 'block';
+          document.getElementById('fallback').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        } else {
+          alert('Не удалось отправить ответ. Пожалуйста, попробуйте ещё раз.');
+        }
+      }).catch(function(){
+        alert('Не удалось отправить ответ. Пожалуйста, проверьте интернет и попробуйте ещё раз.');
+      }).finally(function(){
+        btn.disabled = false;
+        btn.textContent = 'Отправить ответ';
+      });
     });
 
     document.getElementById('copyBtn').addEventListener('click', function(){
